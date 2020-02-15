@@ -18,6 +18,7 @@ class entity(object):
         self.width = dimens[0]
         self.height = dimens[1]
         self.speed = 5
+        self.jump_speed = 3.5736
         self.up = False
         self.down = False
         self.left = False
@@ -156,6 +157,7 @@ def sprite_direction(new_direction):
     elif new_direction == 'down':
         player.down = True
 
+# Restrict player from accessing certain regions of the map
 def restrict_player():
     if not player.is_jumping:
         if player.y < 0:
@@ -222,8 +224,6 @@ crab5.init_as_enemy(True, False)
 
 whosplayin = 1
 
-jump_vel = 3.5736
-
 # Main Loop
 while(run):
     clock.tick(60)
@@ -259,19 +259,19 @@ while(run):
     # Jump
     delta = clock.tick(60)
     if player.is_jumping == 1:
-        if jump_vel > -2:
-            player.y -= jump_vel * delta
-            jump_vel -= 1
+        if player.jump_speed > -2:
+            player.y -= player.jump_speed * delta
+            player.jump_speed -= 1
         else:
             player.is_jumping = False
-            jump_vel = 3.5736
+            player.jump_speed = 3.5736
     elif player.is_jumping == 2:
-        if jump_vel > -2:
-            player.y += jump_vel * delta
-            jump_vel -= 1
+        if player.jump_speed > -2:
+            player.y += player.jump_speed * delta
+            player.jump_speed -= 1
         else:
             player.is_jumping = False
-            jump_vel = 3.5736
+            player.jump_speed = 3.5736
 
     # Restrict motion of player
     restrict_player()
