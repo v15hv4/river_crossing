@@ -1,5 +1,5 @@
 import pygame
-
+import random
 pygame.init()
 
 # Window Dimensions
@@ -10,6 +10,9 @@ win = pygame.display.set_mode((win_width, win_height))
 pygame.display.set_caption("River Crossing [ALPHA]")
 
 clock = pygame.time.Clock()
+
+# Set level
+level = 1
 
 class entity(object):
     def __init__(self, x, y, dimens, sprite):
@@ -24,15 +27,29 @@ class entity(object):
         self.left = False
         self.right = False
         self.sprite = sprite
+        
+    def hitbox(self):
+        return (self.x - 10, self.y - 10, self.width + 20, self.height + 20)
+
+    def face_direction(self):
+        if self.direction == -1:
+            self.left = True
+        else:
+            self.right = True
 
     def init_as_player(self, up, down):
         self.up = up
         self.down = down
         self.is_jumping = 0
 
-    def init_as_enemy(self, left, right):
-        self.left = left
-        self.right = right
+    def com(self):
+        return (self.hitbox()[0] + (self.hitbox()[2] / 2), self.hitbox()[1] + (self.hitbox()[3] / 2))
+        # return (self.x + (self.width / 2), self.y + (self.height / 2))
+
+    def init_as_enemy(self, speed, direction):
+        self.speed = speed
+        self.direction = direction
+        self.face_direction()
 
     def draw(self):
         if self.up:
@@ -43,7 +60,10 @@ class entity(object):
             win.blit(self.sprite[0], (self.x, self.y))
         elif self.right:
             win.blit(self.sprite[1], (self.x, self.y))
-        
+
+        # Visualize hitboxes [DEBUG]
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox(), 2)
+
 run = True
 
 # Sprite Dimensions
@@ -142,6 +162,17 @@ whale_offset = -10
 crab_offset = 0
 boat_offset = -35
 
+# Enemy speeds in each level
+enemy_speed = [5, 7, 9, 11, 13]
+
+# Enemy lists
+orca = [orca_dimens, orca_offset, orca_sprite]
+turtle = [turtle_dimens, turtle_offset, turtle_sprite]
+whale = [whale_dimens, whale_offset, whale_sprite]
+boat = [boat_dimens, boat_offset, boat_sprite]
+crab = [crab_dimens, crab_offset, crab_sprite]
+enemy_list = [orca, turtle, whale, boat, crab]
+
 # Change sprite variant based on direction
 def sprite_direction(new_direction):
     player.up = False
@@ -204,25 +235,147 @@ def redraw():
     crab3.draw()
     crab4.draw()
     crab5.draw()
+    row1_enemy.draw()
+    row2_enemy.draw()
+    row3_enemy.draw()
+    row4_enemy.draw()
+    row5_enemy.draw()
+    row6_enemy.draw()
     pygame.display.update()
 
-# Entities
+# Players
 player1 = entity(p1_x, p1_y, player_dimens, blue_sprite)
 player1.init_as_player(True, False)
 player2 = entity(p2_x, p2_y, player_dimens, purple_sprite)
 player2.init_as_player(False, True)
-crab1 = entity(0, land_r1 + crab_offset, crab_dimens, crab_sprite)
-crab1.init_as_enemy(True, False)
-crab2 = entity(0, land_r2 + crab_offset, crab_dimens, crab_sprite)
-crab2.init_as_enemy(False, True)
-crab3 = entity(0, land_r3 + crab_offset, crab_dimens, crab_sprite)
-crab3.init_as_enemy(True, False)
-crab4 = entity(0, land_r4 + crab_offset, crab_dimens, crab_sprite)
-crab4.init_as_enemy(False, True)
-crab5 = entity(0, land_r5 + crab_offset, crab_dimens, crab_sprite)
-crab5.init_as_enemy(True, False)
 
+# Enemies
+land_enemy = enemy_list[4]
+
+# Enemy at Land Row 1
+crab1 = entity(
+    random.randint(0, win_width - land_enemy[0][0]), 
+    land_r1 + land_enemy[1], 
+    land_enemy[0], 
+    land_enemy[2]
+)
+crab1.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Land Row 2
+crab2 = entity(
+    random.randint(0, win_width - land_enemy[0][0]), 
+    land_r2 + land_enemy[1], 
+    land_enemy[0], 
+    land_enemy[2]
+)
+crab2.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Land Row 3
+crab3 = entity(
+    random.randint(0, win_width - land_enemy[0][0]), 
+    land_r3 + land_enemy[1], 
+    land_enemy[0], 
+    land_enemy[2]
+)
+crab3.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Land Row 4
+crab4 = entity(
+    random.randint(0, win_width - land_enemy[0][0]), 
+    land_r4 + land_enemy[1], 
+    land_enemy[0], 
+    land_enemy[2]
+)
+crab4.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Land Row 5
+crab5 = entity(
+    random.randint(0, win_width - land_enemy[0][0]), 
+    land_r5 + land_enemy[1], 
+    land_enemy[0], 
+    land_enemy[2]
+)
+crab5.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Water Row 1
+water_enemy_1 = enemy_list[random.randint(0, 3)]
+row1_enemy = entity(
+    random.randint(0, win_width - water_enemy_1[0][0]),
+    water_r1 + water_enemy_1[1],
+    water_enemy_1[0],
+    water_enemy_1[2]
+)
+row1_enemy.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Water Row 2
+water_enemy_2 = enemy_list[random.randint(0, 3)]
+row2_enemy = entity(
+    random.randint(0, win_width - water_enemy_2[0][0]),
+    water_r2 + water_enemy_2[1],
+    water_enemy_2[0],
+    water_enemy_2[2]
+)
+row2_enemy.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Water Row 3
+water_enemy_3 = enemy_list[random.randint(0, 3)]
+row3_enemy = entity(
+    random.randint(0, win_width - water_enemy_3[0][0]),
+    water_r3 + water_enemy_3[1],
+    water_enemy_3[0],
+    water_enemy_3[2]
+)
+row3_enemy.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Water Row 4
+water_enemy_4 = enemy_list[random.randint(0, 3)]
+row4_enemy = entity(
+    random.randint(0, win_width - water_enemy_4[0][0]),
+    water_r4 + water_enemy_4[1],
+    water_enemy_4[0],
+    water_enemy_4[2]
+)
+row4_enemy.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Water Row 5
+water_enemy_5 = enemy_list[random.randint(0, 3)]
+row5_enemy = entity(
+    random.randint(0, win_width - water_enemy_5[0][0]),
+    water_r5 + water_enemy_5[1],
+    water_enemy_5[0],
+    water_enemy_5[2]
+)
+row5_enemy.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+# Enemy at Water Row 6
+water_enemy_6 = enemy_list[random.randint(0, 3)]
+row6_enemy = entity(
+    random.randint(0, win_width - water_enemy_6[0][0]),
+    water_r6 + water_enemy_6[1],
+    water_enemy_6[0],
+    water_enemy_6[2]
+)
+row6_enemy.init_as_enemy(enemy_speed[level - 1], random.choice([-1, 1]))
+
+static_enemy_list = [
+    crab1,
+    crab2,
+    crab3,
+    crab4,
+    crab5
+]
+moving_enemy_list = [
+    row1_enemy,
+    row2_enemy,
+    row3_enemy,
+    row4_enemy,
+    row5_enemy,
+    row6_enemy
+]
+
+# Global variables
 whosplayin = 1
+dead = False
 
 # Main Loop
 while(run):
@@ -256,48 +409,66 @@ while(run):
                 else:
                     whosplayin = 1
 
-    # Jump
-    delta = clock.tick(60)
-    if player.is_jumping == 1:
-        if player.jump_speed > -2:
-            player.y -= player.jump_speed * delta
-            player.jump_speed -= 1
-        else:
-            player.is_jumping = False
-            player.jump_speed = 3.5736
-    elif player.is_jumping == 2:
-        if player.jump_speed > -2:
-            player.y += player.jump_speed * delta
-            player.jump_speed -= 1
-        else:
-            player.is_jumping = False
-            player.jump_speed = 3.5736
+    if not dead:
 
-    # Restrict motion of player
-    restrict_player()
+        # Jump
+        delta = clock.tick(60)
+        if player.is_jumping == 1:
+            if player.jump_speed > -2:
+                player.y -= player.jump_speed * delta
+                player.jump_speed -= 1
+            else:
+                player.is_jumping = False
+                player.jump_speed = 3.5736
+        elif player.is_jumping == 2:
+            if player.jump_speed > -2:
+                player.y += player.jump_speed * delta
+                player.jump_speed -= 1
+            else:
+                player.is_jumping = False
+                player.jump_speed = 3.5736
 
-    # Sustained keypress actions
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        sprite_direction('left')
-        if player.x > 2:
-            player.x -= player.speed
-    elif keys[pygame.K_RIGHT]:
-        sprite_direction('right')
-        if player.x < (win_width - player_dimens[0] - 2):
-            player.x += player.speed
-    elif keys[pygame.K_UP]: 
-        sprite_direction('up')
-        if player.y > 2:
-            player.y -= player.speed
-    elif keys[pygame.K_DOWN]:
-        sprite_direction('down')
-        if player.y < (win_height - player_dimens[1] - 2):
-            player.y += player.speed
+        # Restrict motion of player
+        restrict_player()
 
-    # Quit Game [DEBUG]
-    elif keys[pygame.K_ESCAPE]:
-        run = False
+        # Enemy motion
+        for enemy_i in moving_enemy_list:
+            if enemy_i.x < win_width:
+                enemy_i.x += enemy_i.direction * enemy_i.speed
+
+        # Death
+        for enemy_i in moving_enemy_list:
+            if player.com()[0] > enemy_i.hitbox()[0] and player.com()[0] < enemy_i.hitbox()[0] + enemy_i.hitbox()[2]:
+                if player.com()[1] > enemy_i.hitbox()[1] and player.com()[1] < enemy_i.hitbox()[1] + enemy_i.hitbox()[3]:
+                    dead = True
+
+        for enemy_i in static_enemy_list:
+            if player.com()[0] > enemy_i.hitbox()[0] and player.com()[0] < enemy_i.hitbox()[0] + enemy_i.hitbox()[2]:
+                if player.com()[1] > enemy_i.hitbox()[1] and player.com()[1] < enemy_i.hitbox()[1] + enemy_i.hitbox()[3]:
+                    dead = True
+
+        # Sustained keypress actions
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            sprite_direction('left')
+            if player.x > 2:
+                player.x -= player.speed
+        elif keys[pygame.K_RIGHT]:
+            sprite_direction('right')
+            if player.x < (win_width - player_dimens[0] - 2):
+                player.x += player.speed
+        elif keys[pygame.K_UP]:
+            sprite_direction('up')
+            if player.y > 2:
+                player.y -= player.speed
+        elif keys[pygame.K_DOWN]:
+            sprite_direction('down')
+            if player.y < (win_height - player_dimens[1] - 2):
+                player.y += player.speed
+
+        # Quit Game [DEBUG]
+        elif keys[pygame.K_ESCAPE]:
+            run = False
 
     redraw()
 pygame.quit()
