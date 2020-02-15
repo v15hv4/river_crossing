@@ -29,6 +29,7 @@ class entity(object):
         self.down = False
         self.left = False
         self.right = False
+        self.is_dead = False
         self.sprite = sprite
         
     def hitbox_static(self):
@@ -67,8 +68,7 @@ class entity(object):
             win.blit(self.sprite[1], (self.x, self.y))
 
         # Visualize hitbox_statices [DEBUG]
-        pygame.draw.rect(win, (0, 0, 255), self.hitbox_static(), 2)
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox_moving(), 2)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox_static(), 2)
 
 run = True
 
@@ -234,21 +234,25 @@ def restrict_player():
 
 # Redraw surface
 def redraw():
-    win.blit(bg, (0, 0))
-    crab1.draw()
-    crab2.draw()
-    crab3.draw()
-    crab4.draw()
-    crab5.draw()
-    if not player.is_jumping:
-        player.draw()
-    row1_enemy.draw()
-    row2_enemy.draw()
-    row3_enemy.draw()
-    row4_enemy.draw()
-    row5_enemy.draw()
-    row6_enemy.draw()
-    if player.is_jumping:
+    if not player.is_dead:
+        win.blit(bg, (0, 0))
+        crab1.draw()
+        crab2.draw()
+        crab3.draw()
+        crab4.draw()
+        crab5.draw()
+        if not player.is_jumping:
+            player.draw()
+        row1_enemy.draw()
+        row2_enemy.draw()
+        row3_enemy.draw()
+        row4_enemy.draw()
+        row5_enemy.draw()
+        row6_enemy.draw()
+        if player.is_jumping:
+            player.draw()
+    else:
+        win.fill((0, 0, 0))
         player.draw()
     pygame.display.update()
 
@@ -384,7 +388,6 @@ moving_enemy_list = [
 
 # Global variables
 whosplayin = 1
-dead = False
 
 # Main Loop
 while(run):
@@ -418,7 +421,7 @@ while(run):
                 else:
                     whosplayin = 1
 
-    if not dead:
+    if not player.is_dead:
 
         # Jump
         delta = clock.tick(60)
@@ -458,12 +461,12 @@ while(run):
             if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
                 if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
                     if player.is_jumping:
-                        dead = True
+                        player.is_dead = True
 
         for enemy_i in static_enemy_list:
             if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
                 if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
-                    dead = True
+                    player.is_dead = True
 
         # Sustained keypress actions
         keys = pygame.key.get_pressed()
