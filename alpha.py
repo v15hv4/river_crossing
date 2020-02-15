@@ -27,6 +27,7 @@ class entity(object):
     def init_as_player(self, up, down):
         self.up = up
         self.down = down
+        self.is_jumping = 0
 
     def init_as_enemy(self, left, right):
         self.left = left
@@ -155,6 +156,43 @@ def sprite_direction(new_direction):
     elif new_direction == 'down':
         player.down = True
 
+def restrict_player():
+    if not player.is_jumping:
+        if player.y < 0:
+            player.y = 0
+        if player.y > (win_height - player_dimens[1] - 2):
+            player.y = (win_height - player_dimens[1] - 2)
+        if player.y > 558 and player.y < 640:
+            if player.up:
+                player.y = 642
+            elif player.down:
+                player.y = 556
+        if player.y > 450 and player.y < 532:
+            if player.up:
+                player.y = 534
+            elif player.down:
+                player.y = 448
+        if player.y > 342 and player.y < 424:
+            if player.up:
+                player.y = 426
+            elif player.down:
+                player.y = 340
+        if player.y > 234 and player.y < 316:
+            if player.up:
+                player.y = 318
+            elif player.down:
+                player.y = 232
+        if player.y > 126 and player.y < 208:
+            if player.up:
+                player.y = 210
+            elif player.down:
+                player.y = 124
+        if player.y > 18 and player.y < 100:
+            if player.up:
+                player.y = 102
+            elif player.down:
+                player.y = 16
+
 # Redraw surface
 def redraw():
     win.blit(bg, (0, 0))
@@ -184,6 +222,8 @@ crab5.init_as_enemy(True, False)
 
 whosplayin = 1
 
+jump_vel = 3.5736
+
 # Main Loop
 while(run):
     clock.tick(60)
@@ -199,18 +239,14 @@ while(run):
         if event.type == pygame.QUIT:
             run = False
 
-        # Jump
+        # Jump Trigger
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 if not player.right and not player.left:
                     if player.up and player.y > 50:
-                        player.y -= 108
-                        if player.y < 0:
-                            player.y = 0
+                        player.is_jumping = 1
                     elif player.down and player.y < (win_height - 50):
-                        player.y += 108
-                        if player.y > (win_height - player_dimens[1] - 2):
-                            player.y = (win_height - player_dimens[1] - 2)
+                        player.is_jumping = 2
 
         # Switch Player [DEBUG]
         if event.type == pygame.KEYDOWN:
@@ -219,6 +255,26 @@ while(run):
                     whosplayin = 2
                 else:
                     whosplayin = 1
+
+    # Jump
+    delta = clock.tick(60)
+    if player.is_jumping == 1:
+        if jump_vel > -2:
+            player.y -= jump_vel * delta
+            jump_vel -= 1
+        else:
+            player.is_jumping = False
+            jump_vel = 3.5736
+    elif player.is_jumping == 2:
+        if jump_vel > -2:
+            player.y += jump_vel * delta
+            jump_vel -= 1
+        else:
+            player.is_jumping = False
+            jump_vel = 3.5736
+
+    # Restrict motion of player
+    restrict_player()
 
     # Sustained keypress actions
     keys = pygame.key.get_pressed()
