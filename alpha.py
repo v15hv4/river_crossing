@@ -14,27 +14,32 @@ clock = pygame.time.Clock()
 # Set level
 level = 1
 
+player_speed = 5
+player_jump_speed = 4
+
 class entity(object):
     def __init__(self, x, y, dimens, sprite):
         self.x = x
         self.y = y
         self.width = dimens[0]
         self.height = dimens[1]
-        self.speed = 5
-        self.jump_speed = 3.5736
+        self.speed = player_speed
+        self.jump_speed = player_jump_speed
         self.up = False
         self.down = False
         self.left = False
         self.right = False
         self.sprite = sprite
         
-    def hitbox(self):
-        return (self.x - 10, self.y - 10, self.width + 20, self.height + 20)
+    def hitbox_static(self):
+        return (self.x - 10, self.y - 10, self.width + 30, self.height + 20)
 
     def face_direction(self):
         if self.direction == -1:
             self.left = True
+            self.right = False
         else:
+            self.left = False
             self.right = True
 
     def init_as_player(self, up, down):
@@ -43,7 +48,7 @@ class entity(object):
         self.is_jumping = 0
 
     def com(self):
-        return (self.hitbox()[0] + (self.hitbox()[2] / 2), self.hitbox()[1] + (self.hitbox()[3] / 2))
+        return (self.hitbox_static()[0] + (self.hitbox_static()[2] / 2), self.hitbox_static()[1] + (self.hitbox_static()[3] / 2))
         # return (self.x + (self.width / 2), self.y + (self.height / 2))
 
     def init_as_enemy(self, speed, direction):
@@ -61,8 +66,9 @@ class entity(object):
         elif self.right:
             win.blit(self.sprite[1], (self.x, self.y))
 
-        # Visualize hitboxes [DEBUG]
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox(), 2)
+        # Visualize hitbox_statices [DEBUG]
+        pygame.draw.rect(win, (0, 0, 255), self.hitbox_static(), 2)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox_moving(), 2)
 
 run = True
 
@@ -229,18 +235,21 @@ def restrict_player():
 # Redraw surface
 def redraw():
     win.blit(bg, (0, 0))
-    player.draw()
     crab1.draw()
     crab2.draw()
     crab3.draw()
     crab4.draw()
     crab5.draw()
+    if not player.is_jumping:
+        player.draw()
     row1_enemy.draw()
     row2_enemy.draw()
     row3_enemy.draw()
     row4_enemy.draw()
     row5_enemy.draw()
     row6_enemy.draw()
+    if player.is_jumping:
+        player.draw()
     pygame.display.update()
 
 # Players
@@ -416,35 +425,44 @@ while(run):
         if player.is_jumping == 1:
             if player.jump_speed > -2:
                 player.y -= player.jump_speed * delta
-                player.jump_speed -= 1
+                player.jump_speed -= 2
             else:
                 player.is_jumping = False
-                player.jump_speed = 3.5736
+                player.jump_speed = player_jump_speed
         elif player.is_jumping == 2:
             if player.jump_speed > -2:
                 player.y += player.jump_speed * delta
-                player.jump_speed -= 1
+                player.jump_speed -= 2
             else:
                 player.is_jumping = False
-                player.jump_speed = 3.5736
+                player.jump_speed = player_jump_speed
 
         # Restrict motion of player
         restrict_player()
 
         # Enemy motion
         for enemy_i in moving_enemy_list:
-            if enemy_i.x < win_width:
-                enemy_i.x += enemy_i.direction * enemy_i.speed
+            if enemy_i.x < win_width and enemy_i.direction == 1:
+                enemy_i.x += enemy_i.speed
+            if enemy_i.x >= win_width:
+                enemy_i.direction = -1
+                enemy_i.face_direction()
+            if enemy_i.x > -enemy_i.width and enemy_i.direction == -1:
+                enemy_i.x -= enemy_i.speed
+            if enemy_i.x <= 0:
+                enemy_i.direction = 1
+                enemy_i.face_direction()
 
         # Death
         for enemy_i in moving_enemy_list:
-            if player.com()[0] > enemy_i.hitbox()[0] and player.com()[0] < enemy_i.hitbox()[0] + enemy_i.hitbox()[2]:
-                if player.com()[1] > enemy_i.hitbox()[1] and player.com()[1] < enemy_i.hitbox()[1] + enemy_i.hitbox()[3]:
-                    dead = True
+            if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
+                if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
+                    if player.is_jumping:
+                        dead = True
 
         for enemy_i in static_enemy_list:
-            if player.com()[0] > enemy_i.hitbox()[0] and player.com()[0] < enemy_i.hitbox()[0] + enemy_i.hitbox()[2]:
-                if player.com()[1] > enemy_i.hitbox()[1] and player.com()[1] < enemy_i.hitbox()[1] + enemy_i.hitbox()[3]:
+            if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
+                if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
                     dead = True
 
         # Sustained keypress actions
