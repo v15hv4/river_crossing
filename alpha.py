@@ -32,7 +32,7 @@ class entity(object):
         self.sprite = sprite
         
     def hitbox_static(self):
-        return (self.x - 10, self.y - 10, self.width + 30, self.height + 20)
+        return (self.x - 20, self.y - 15, self.width + 40, self.height + 30)
 
     def face_direction(self):
         if self.direction == -1:
