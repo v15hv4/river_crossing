@@ -23,6 +23,8 @@ current_player = configparser.getint('init', 'current_player')
 player_speed = configparser.getint('player_general', 'speed')
 player_init_level = configparser.getint('player_general', 'init_level')
 player_init_score = configparser.getint('player_general', 'init_score')
+player_init_bonus = 0
+# configparser.getint('player_general', 'init_bonus')
 
 # Sprite dimensions
 player_dimens = (configparser.getint('player_general', 'width'), configparser.getint('player_general', 'height'))
@@ -71,6 +73,7 @@ boat_speed = configparser.getint('boat', 'speed')
 level_string = str(configparser.get('strings', 'level_string'))
 score_string = str(configparser.get('strings', 'score_string'))
 continue_string = str(configparser.get('strings', 'continue_string'))
+time_string = str(configparser.get('strings', 'time_string'))
 success_string = str(configparser.get('strings', 'success_string'))
 failure_string = str(configparser.get('strings', 'failure_string'))
 player1_win_string = str(configparser.get('strings', 'player1_win_string'))
@@ -90,6 +93,7 @@ class entity(object):
         self.height = dimens[1]
         self.speed = player_speed
         self.score = player_init_score
+        self.bonus = player_init_bonus
         self.level = player_init_level
         self.up = False
         self.down = False
@@ -439,12 +443,14 @@ def next_round():
     player1.is_successful = False
     player1.has_played = False
     player1.score = 0
+    player1.bonus = 0
     player1.x = player1_x
     player1.y = player1_y
     player2.is_dead = False
     player2.is_successful = False
     player2.has_played = False
     player2.score = 0
+    player2.bonus = 0
     player2.x = player2_x
     player2.y = player2_y
 
@@ -485,6 +491,7 @@ def redraw(result_text):
     else:
         round_text = font.render(level_string + ' ' + str(player.level), 1, (255, 255, 255))
         score_text = font.render(score_string + ' ' + str(player.score), 1, (255, 255, 255))
+        time_text = font.render('[ ' + time_string + ' ' + str(player.bonus) + ' ]', 1, (255, 255, 255))
         continue_text = font.render(continue_string, 1, (255, 255, 255))
         if not player.is_dead:
             win.blit(bg, (0, 0))
@@ -502,19 +509,27 @@ def redraw(result_text):
                 end_text = font.render(success_string, 1, (0, 255, 0))
             else:
                 end_text = font.render(failure_string, 1, (255, 0, 0))
-            win.blit(end_text, ((win_width - end_text.get_width() / 2) / 2, (win_height / 2) - 50))
-            win.blit(score_text, ((win_width - score_text.get_width() / 2) / 2, win_height / 2))
+            win.blit(end_text, (((win_width - end_text.get_width() / 2) / 2) - 10, (win_height / 2) - 50))
+            win.blit(score_text, (((win_width - score_text.get_width() / 2) / 2) - 10, win_height / 2))
+            if player.bonus > 0:
+                win.blit(time_text, (((win_width - time_text.get_width() / 2) / 2) - 40, (win_height / 2) + 50))
             if player1.is_dead and player2.is_dead:
-                win.blit(result_text, (((win_width - result_text.get_width() / 2) / 2) - 40, (win_height / 2) + 50))
-            win.blit(continue_text, (((win_width - continue_text.get_width() / 2) / 2) - 40, (win_height / 2) + 100))
+                win.blit(result_text, (((win_width - result_text.get_width() / 2) / 2) - 60, (win_height / 2) + 100))
+            win.blit(continue_text, (((win_width - continue_text.get_width() / 2) / 2) - 60, (win_height / 2) + 150))
     pygame.display.update()
 
 # Main loop
 run = True
 splash_screen = True
 tutorial_screen = False
+start_time = 0
+end_time = 0
+time_bonus = 0
 while(run):
-    time_bonus = clock.tick(fps)
+    clock.tick(fps)
+
+    if start_time == 0:
+        start_time = pygame.time.get_ticks()
 
     # Check for player change
     if current_player == 1:
@@ -538,7 +553,7 @@ while(run):
 
     # Update enemy speeds according to player's level
     update_speeds()
-    
+
     # Single keypress actions
     for event in pygame.event.get():
 
@@ -568,10 +583,12 @@ while(run):
         for enemy_i in moving_entity_list:
             if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
                 if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
+                    end_time = pygame.time.get_ticks()
                     player.is_dead = True
         for enemy_i in static_entity_list:
             if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
                 if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
+                    end_time = pygame.time.get_ticks()
                     player.is_dead = True
 
         # Sustained keypress actions
@@ -599,7 +616,15 @@ while(run):
 
         # Add time bonus to total score if successfully reached
         if player.is_successful:
-            player.score += (100 - time_bonus)
+            end_time = pygame.time.get_ticks()
+            time_bonus = (100 - ((end_time - start_time) // 1000)) // 2
+            if time_bonus < 0:
+                time_bonus = 0
+            player.bonus = time_bonus
+            player.score += time_bonus
+            start_time = 0
+            end_time = 0
+            time_bonus = 0
 
         # Decide winner of the round
         if player1.is_dead and player2.is_dead:
@@ -618,10 +643,12 @@ while(run):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 switch_player()
+                start_time = 0
+                end_time = 0
+                time_bonus = 0
 
     redraw(result_text)
 pygame.quit()
 
-# TODO: Fix time bonus
 # TODO: Check whether code complies with PEP8 standards
 # TODO: Sounds (?)
