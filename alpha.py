@@ -12,11 +12,10 @@ pygame.display.set_caption("River Crossing [ALPHA]")
 clock = pygame.time.Clock()
 
 # Miscellaneous Global Variables
-level = 1
 player_speed = 5
 # player_jump_speed = 4
 run = True
-whosplayin = 1
+current_player = 1
 
 class entity(object):
     def __init__(self, x, y, dimens, sprite):
@@ -25,12 +24,15 @@ class entity(object):
         self.width = dimens[0]
         self.height = dimens[1]
         self.speed = player_speed
+        self.score = 0
+        self.level = 1
         # self.jump_speed = player_jump_speed
         self.up = False
         self.down = False
         self.left = False
         self.right = False
         self.is_dead = False
+        self.has_played = False
         self.sprite = sprite
         
     def hitbox_static(self):
@@ -217,7 +219,7 @@ crab1 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab1.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+crab1.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Land Row 2
 crab2 = entity(
@@ -226,7 +228,7 @@ crab2 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab2.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+crab2.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Land Row 3
 crab3 = entity(
@@ -235,7 +237,7 @@ crab3 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab3.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+crab3.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Land Row 4
 crab4 = entity(
@@ -244,7 +246,7 @@ crab4 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab4.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+crab4.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Land Row 5
 crab5 = entity(
@@ -253,7 +255,7 @@ crab5 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab5.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+crab5.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 1
 water_enemy_1 = entity_list[random.randint(0, 3)]
@@ -263,7 +265,7 @@ row1_enemy = entity(
     water_enemy_1[0],
     water_enemy_1[2]
 )
-row1_enemy.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+row1_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 2
 water_enemy_2 = entity_list[random.randint(0, 3)]
@@ -273,7 +275,7 @@ row2_enemy = entity(
     water_enemy_2[0],
     water_enemy_2[2]
 )
-row2_enemy.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+row2_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 3
 water_enemy_3 = entity_list[random.randint(0, 3)]
@@ -283,7 +285,7 @@ row3_enemy = entity(
     water_enemy_3[0],
     water_enemy_3[2]
 )
-row3_enemy.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+row3_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 4
 water_enemy_4 = entity_list[random.randint(0, 3)]
@@ -293,7 +295,7 @@ row4_enemy = entity(
     water_enemy_4[0],
     water_enemy_4[2]
 )
-row4_enemy.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+row4_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 5
 water_enemy_5 = entity_list[random.randint(0, 3)]
@@ -303,7 +305,7 @@ row5_enemy = entity(
     water_enemy_5[0],
     water_enemy_5[2]
 )
-row5_enemy.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+row5_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 6
 water_enemy_6 = entity_list[random.randint(0, 3)]
@@ -313,7 +315,7 @@ row6_enemy = entity(
     water_enemy_6[0],
     water_enemy_6[2]
 )
-row6_enemy.init_as_enemy(entity_speeds[level - 1], random.choice([-1, 1]))
+row6_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy Lists
 static_entity_list = [
@@ -346,6 +348,31 @@ def sprite_direction(new_direction):
         player.up = True
     elif new_direction == 'down':
         player.down = True
+
+def update_speeds():
+    for entity in moving_entity_list:
+        entity.speed = entity_speeds[player.level - 1]
+
+def next_round():
+    player1.is_dead = False
+    player1.score = 0
+    player1.x = p1_x
+    player1.y = p1_y
+    player2.is_dead = False
+    player2.score = 0
+    player2.x = p2_x
+    player2.y = p2_y
+
+def switch_player():
+    global current_player
+    if player1.is_dead and player2.is_dead:
+        next_round()
+        current_player = 1
+    if player.is_dead:
+        if current_player == 1:
+            current_player = 2
+        else:
+            current_player = 1
 
 # Restrict player from accessing certain regions of the map
 def restrict_player():
@@ -388,9 +415,14 @@ def restrict_player():
         '''
 
 # Redraw surface
-def redraw():
+def redraw(result_text):
+    round_text = font.render('LEVEL ' + str(player.level), 1, (255, 255, 255))
+    score_text = font.render('SCORE: ' + str(player.score), 1, (255, 255, 255))
+    continue_text = font.render('PRESS ENTER TO CONTINUE', 1, (255, 255, 255))
     if not player.is_dead:
         win.blit(bg, (0, 0))
+        win.blit(score_text, (5, 0))
+        win.blit(round_text, (win_width - 80, 0))
         crab1.draw()
         crab2.draw()
         crab3.draw()
@@ -411,17 +443,29 @@ def redraw():
     else:
         win.fill((0, 0, 0))
         player.draw()
+        dead_text = font.render('YOU DIED!', 1, (255, 255, 255))
+        win.blit(dead_text, ((win_width - 60) / 2, (win_height / 2) - 50))
+        win.blit(score_text, ((win_width - 60) / 2, win_height / 2))
+        if player1.is_dead and player2.is_dead:
+            win.blit(result_text, ((win_width - 60) / 2, (win_height / 2) + 50))
+        win.blit(continue_text, (((win_width - 60) / 2) - 75, (win_height / 2) + 100))
     pygame.display.update()
 
 # Main Loop
+font = pygame.font.Font('HeartbitXX.ttf', 30)
+
 while(run):
     clock.tick(60)
 
-    if whosplayin == 1:
+    if current_player == 1:
         player = player1
+        player1.has_played = True
     else:
         player = player2
+        player2.has_played = True
 
+    update_speeds()
+    
     # Single keypress actions
     for event in pygame.event.get():
 
@@ -443,10 +487,10 @@ while(run):
         # Switch Player [DEBUG]
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_0:
-                if whosplayin == 1:
-                    whosplayin = 2
+                if current_player == 1:
+                    current_player = 2
                 else:
-                    whosplayin = 1
+                    current_player = 1
 
     if not player.is_dead:
 
@@ -515,6 +559,24 @@ while(run):
             sprite_direction('down')
             if player.y < (win_height - player_dimens[1] - 2):
                 player.y += player.speed
+        result_text = font.render('', 1, (255, 255, 255))
+    
+        if player1.is_dead and player2.is_dead:
+            if player1.score > player2.score:
+                result_text = font.render('PLAYER 1 WINS THE ROUND!', 1, (255, 255, 255))
+                player1.level += 1
+            elif player1.score < player2.score:
+                result_text = font.render('PLAYER 2 WINS THE ROUND!', 1, (255, 255, 255))
+                player2.level += 1
+            else:
+                result_text = font.render('IT\'S A TIE!', 1, (255, 255, 255))
+                player1.level += 1
+                player2.level += 1
 
-    redraw()
+    else:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                switch_player()
+
+    redraw(result_text)
 pygame.quit()
