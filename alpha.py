@@ -7,7 +7,7 @@ win_height = 696
 win_width = 696
 win = pygame.display.set_mode((win_width, win_height))
 
-pygame.display.set_caption("River Crossing [ALPHA]")
+pygame.display.set_caption("River Crossing [BETA]")
 
 clock = pygame.time.Clock()
 
