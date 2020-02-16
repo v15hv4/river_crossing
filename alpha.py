@@ -46,9 +46,13 @@ class entity(object):
             self.left = False
             self.right = True
 
-    def init_as_player(self, up, down):
+    def init_as_player(self, up, down, move_up, move_down, move_left, move_right):
         self.up = up
         self.down = down
+        self.move_up = move_up
+        self.move_down = move_down
+        self.move_left = move_left
+        self.move_right = move_right
 
     def init_as_enemy(self, speed, direction):
         self.speed = speed
@@ -175,9 +179,9 @@ entity_speeds = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
 
 # Players
 player1 = entity(player1_x, player1_y, player_dimens, blue_sprite)
-player1.init_as_player(True, False)
+player1.init_as_player(True, False, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
 player2 = entity(player2_x, player2_y, player_dimens, purple_sprite)
-player2.init_as_player(False, True)
+player2.init_as_player(False, True, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
 
 # Enemies
 land_enemy = entity_list[4]
@@ -506,19 +510,19 @@ while(run):
 
         # Sustained keypress actions
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[player.move_left]:
             sprite_direction('left')
             if player.x > 2:
                 player.x -= player.speed
-        elif keys[pygame.K_RIGHT]:
+        elif keys[player.move_right]:
             sprite_direction('right')
             if player.x < (win_width - player_dimens[0] - 2):
                 player.x += player.speed
-        elif keys[pygame.K_UP]:
+        elif keys[player.move_up]:
             sprite_direction('up')
             if player.y > 2:
                 player.y -= player.speed
-        elif keys[pygame.K_DOWN]:
+        elif keys[player.move_down]:
             sprite_direction('down')
             if player.y < (win_height - player_dimens[1] - 2):
                 player.y += player.speed
@@ -552,7 +556,6 @@ while(run):
     redraw(result_text)
 pygame.quit()
 
-# TODO: Map custom keys to u/d/l/r navigation for each player
 # TODO: Add config files
 # TODO: Check whether code complies with PEP8 standards
 # TODO: Sounds (?)
