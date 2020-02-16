@@ -6,7 +6,7 @@ pygame.init()
 # Load configs
 configparser = configparser.RawConfigParser()
 configparser.read([
-    'config/global.cfg', 
+    'config/global.cfg',
     'config/player.cfg',
     'config/enemies.cfg',
     'config/map.cfg'
@@ -27,12 +27,30 @@ player_init_bonus = 0
 # configparser.getint('player_general', 'init_bonus')
 
 # Sprite dimensions
-player_dimens = (configparser.getint('player_general', 'width'), configparser.getint('player_general', 'height'))
-orca_dimens = (configparser.getint('orca', 'width'), configparser.getint('orca', 'height'))
-turtle_dimens = (configparser.getint('turtle', 'width'), configparser.getint('turtle', 'height'))
-whale_dimens = (configparser.getint('whale', 'width'), configparser.getint('whale', 'height'))
-crab_dimens = (configparser.getint('crab', 'width'), configparser.getint('crab', 'height'))
-boat_dimens = (configparser.getint('boat', 'width'), configparser.getint('boat', 'height'))
+player_dimens = (
+    configparser.getint('player_general', 'width'),
+    configparser.getint('player_general', 'height')
+)
+orca_dimens = (
+    configparser.getint('orca', 'width'),
+    configparser.getint('orca', 'height')
+)
+turtle_dimens = (
+    configparser.getint('turtle', 'width'),
+    configparser.getint('turtle', 'height')
+)
+whale_dimens = (
+    configparser.getint('whale', 'width'),
+    configparser.getint('whale', 'height')
+)
+crab_dimens = (
+    configparser.getint('crab', 'width'),
+    configparser.getint('crab', 'height')
+)
+boat_dimens = (
+    configparser.getint('boat', 'width'),
+    configparser.getint('boat', 'height')
+)
 
 # Initial player positions
 player1_x = configparser.getint('player1', 'x')
@@ -84,8 +102,9 @@ pygame.display.set_caption("River Crossing [BETA]")
 
 clock = pygame.time.Clock()
 
+
 # Blueprint of every in-game entity
-class entity(object):
+class Entity(object):
     def __init__(self, x, y, dimens, sprite):
         self.x = x
         self.y = y
@@ -103,7 +122,7 @@ class entity(object):
         self.has_played = False
         self.is_successful = False
         self.sprite = sprite
-        
+
     def hitbox_static(self):
         return (self.x - 10, self.y + self.height / 1.8, self.width + 20, 45)
 
@@ -129,7 +148,8 @@ class entity(object):
         self.face_direction()
 
     def com(self):
-        return (self.hitbox_static()[0] + (self.hitbox_static()[2] / 2), self.hitbox_static()[1] + (self.hitbox_static()[3] / 2))
+        return (self.hitbox_static()[0] + (self.hitbox_static()[2] / 2),
+                self.hitbox_static()[1] + (self.hitbox_static()[3] / 2))
 
     def draw(self):
         if self.up:
@@ -182,37 +202,37 @@ purple_down = pygame.transform.scale(purple_down, player_dimens)
 purple_sprite = [purple_left, purple_right, purple_up, purple_down]
 
 # Enemy Orca Sprites
-orca_left =  pygame.image.load('res/sprites/orca_left.png')
+orca_left = pygame.image.load('res/sprites/orca_left.png')
 orca_left = pygame.transform.scale(orca_left, orca_dimens)
-orca_right =  pygame.image.load('res/sprites/orca_right.png')
+orca_right = pygame.image.load('res/sprites/orca_right.png')
 orca_right = pygame.transform.scale(orca_right, orca_dimens)
 orca_sprite = [orca_left, orca_right]
 
 # Enemy Turtle Sprites
-turtle_left =  pygame.image.load('res/sprites/turtle_left.png')
+turtle_left = pygame.image.load('res/sprites/turtle_left.png')
 turtle_left = pygame.transform.scale(turtle_left, turtle_dimens)
-turtle_right =  pygame.image.load('res/sprites/turtle_right.png')
+turtle_right = pygame.image.load('res/sprites/turtle_right.png')
 turtle_right = pygame.transform.scale(turtle_right, turtle_dimens)
 turtle_sprite = [turtle_left, turtle_right]
 
 # Enemy Whale Sprites
-whale_left =  pygame.image.load('res/sprites/whale_left.png')
+whale_left = pygame.image.load('res/sprites/whale_left.png')
 whale_left = pygame.transform.scale(whale_left, whale_dimens)
-whale_right =  pygame.image.load('res/sprites/whale_right.png')
+whale_right = pygame.image.load('res/sprites/whale_right.png')
 whale_right = pygame.transform.scale(whale_right, whale_dimens)
 whale_sprite = [whale_left, whale_right]
 
 # Enemy Crab Sprites
-crab_left =  pygame.image.load('res/sprites/crab_left.png')
+crab_left = pygame.image.load('res/sprites/crab_left.png')
 crab_left = pygame.transform.scale(crab_left, crab_dimens)
-crab_right =  pygame.image.load('res/sprites/crab_right.png')
+crab_right = pygame.image.load('res/sprites/crab_right.png')
 crab_right = pygame.transform.scale(crab_right, crab_dimens)
 crab_sprite = [crab_left, crab_right]
 
 # Enemy Boat Sprites
-boat_left =  pygame.image.load('res/sprites/boat_left.png')
+boat_left = pygame.image.load('res/sprites/boat_left.png')
 boat_left = pygame.transform.scale(boat_left, boat_dimens)
-boat_right =  pygame.image.load('res/sprites/boat_right.png')
+boat_right = pygame.image.load('res/sprites/boat_right.png')
 boat_right = pygame.transform.scale(boat_right, boat_dimens)
 boat_sprite = [boat_left, boat_right]
 
@@ -226,62 +246,62 @@ entity_list = [orca, turtle, whale, boat, crab]
 entity_speeds = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
 
 # Players
-player1 = entity(player1_x, player1_y, player_dimens, blue_sprite)
+player1 = Entity(player1_x, player1_y, player_dimens, blue_sprite)
 player1.init_as_player(True, False, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
-player2 = entity(player2_x, player2_y, player_dimens, purple_sprite)
+player2 = Entity(player2_x, player2_y, player_dimens, purple_sprite)
 player2.init_as_player(False, True, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
 
 # Enemies
 land_enemy = entity_list[4]
 
 # Enemy at Land Row 1
-crab1 = entity(
-    random.randint(0, win_width - land_enemy[0][0]), 
-    land_r1 + land_enemy[1], 
-    land_enemy[0], 
+crab1 = Entity(
+    random.randint(0, win_width - land_enemy[0][0]),
+    land_r1 + land_enemy[1],
+    land_enemy[0],
     land_enemy[2]
 )
 crab1.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 2
-crab2 = entity(
-    random.randint(0, win_width - land_enemy[0][0]), 
-    land_r2 + land_enemy[1], 
-    land_enemy[0], 
+crab2 = Entity(
+    random.randint(0, win_width - land_enemy[0][0]),
+    land_r2 + land_enemy[1],
+    land_enemy[0],
     land_enemy[2]
 )
 crab2.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 3
-crab3 = entity(
-    random.randint(0, win_width - land_enemy[0][0]), 
-    land_r3 + land_enemy[1], 
-    land_enemy[0], 
+crab3 = Entity(
+    random.randint(0, win_width - land_enemy[0][0]),
+    land_r3 + land_enemy[1],
+    land_enemy[0],
     land_enemy[2]
 )
 crab3.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 4
-crab4 = entity(
-    random.randint(0, win_width - land_enemy[0][0]), 
-    land_r4 + land_enemy[1], 
-    land_enemy[0], 
+crab4 = Entity(
+    random.randint(0, win_width - land_enemy[0][0]),
+    land_r4 + land_enemy[1],
+    land_enemy[0],
     land_enemy[2]
 )
 crab4.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 5
-crab5 = entity(
-    random.randint(0, win_width - land_enemy[0][0]), 
-    land_r5 + land_enemy[1], 
-    land_enemy[0], 
+crab5 = Entity(
+    random.randint(0, win_width - land_enemy[0][0]),
+    land_r5 + land_enemy[1],
+    land_enemy[0],
     land_enemy[2]
 )
 crab5.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Water Row 1
 water_enemy_1 = entity_list[random.randint(0, 3)]
-row1_enemy = entity(
+row1_enemy = Entity(
     random.randint(0, win_width - water_enemy_1[0][0]),
     water_r1 + water_enemy_1[1],
     water_enemy_1[0],
@@ -291,7 +311,7 @@ row1_enemy.init_as_enemy(water_enemy_1[3] + entity_speeds[0], random.choice([-1,
 
 # Enemy at Water Row 2
 water_enemy_2 = entity_list[random.randint(0, 3)]
-row2_enemy = entity(
+row2_enemy = Entity(
     random.randint(0, win_width - water_enemy_2[0][0]),
     water_r2 + water_enemy_2[1],
     water_enemy_2[0],
@@ -301,7 +321,7 @@ row2_enemy.init_as_enemy(water_enemy_2[3] + entity_speeds[0], random.choice([-1,
 
 # Enemy at Water Row 3
 water_enemy_3 = entity_list[random.randint(0, 3)]
-row3_enemy = entity(
+row3_enemy = Entity(
     random.randint(0, win_width - water_enemy_3[0][0]),
     water_r3 + water_enemy_3[1],
     water_enemy_3[0],
@@ -311,7 +331,7 @@ row3_enemy.init_as_enemy(water_enemy_3[3] + entity_speeds[0], random.choice([-1,
 
 # Enemy at Water Row 4
 water_enemy_4 = entity_list[random.randint(0, 3)]
-row4_enemy = entity(
+row4_enemy = Entity(
     random.randint(0, win_width - water_enemy_4[0][0]),
     water_r4 + water_enemy_4[1],
     water_enemy_4[0],
@@ -321,7 +341,7 @@ row4_enemy.init_as_enemy(water_enemy_4[3] + entity_speeds[0], random.choice([-1,
 
 # Enemy at Water Row 5
 water_enemy_5 = entity_list[random.randint(0, 3)]
-row5_enemy = entity(
+row5_enemy = Entity(
     random.randint(0, win_width - water_enemy_5[0][0]),
     water_r5 + water_enemy_5[1],
     water_enemy_5[0],
@@ -331,7 +351,7 @@ row5_enemy.init_as_enemy(water_enemy_5[3] + entity_speeds[0], random.choice([-1,
 
 # Enemy at Water Row 6
 water_enemy_6 = entity_list[random.randint(0, 3)]
-row6_enemy = entity(
+row6_enemy = Entity(
     random.randint(0, win_width - water_enemy_6[0][0]),
     water_r6 + water_enemy_6[1],
     water_enemy_6[0],
@@ -356,6 +376,7 @@ moving_entity_list = [
     row6_enemy
 ]
 
+
 # Change sprite variant based on direction
 def sprite_direction(new_direction):
     player.up = False
@@ -371,6 +392,7 @@ def sprite_direction(new_direction):
     elif new_direction == 'down':
         player.down = True
 
+
 # Update speeds of moving enemies
 def update_speeds():
     for entity in moving_entity_list:
@@ -381,6 +403,7 @@ def update_speeds():
     row4_enemy.speed += water_enemy_4[3]
     row5_enemy.speed += water_enemy_5[3]
     row6_enemy.speed += water_enemy_6[3]
+
 
 # Calculate score based on player's position
 def update_score():
@@ -437,6 +460,7 @@ def update_score():
         elif player.y < 40:
             player.score = 0
 
+
 # Reinitialize player values for the next round
 def next_round():
     player1.is_dead = False
@@ -458,6 +482,7 @@ def next_round():
     for crab in static_entity_list:
         crab.x = random.randint(0, win_width - land_enemy[0][0])
 
+
 # Switch player when one's turn is done
 def switch_player():
     global current_player
@@ -470,6 +495,7 @@ def switch_player():
         else:
             current_player = 1
 
+
 # Restrict player from accessing certain regions of the map
 def restrict_player():
     if player.y < 0:
@@ -479,24 +505,52 @@ def restrict_player():
 
 splash_frame = 0
 
+
 # Redraw surface
 def redraw(result_text):
     global splash_frame
     if splash_screen:
-        win.blit(splash[splash_frame], (0, 0))
+        win.blit(
+            splash[splash_frame],
+            (0, 0)
+        )
         splash_frame = (splash_frame + 1) % 2
         pygame.time.delay(200)
     elif tutorial_screen:
-        win.blit(tutorial, (0, 0))
+        win.blit(
+            tutorial,
+            (0, 0)
+        )
     else:
-        round_text = font.render(level_string + ' ' + str(player.level), 1, (255, 255, 255))
-        score_text = font.render(score_string + ' ' + str(player.score), 1, (255, 255, 255))
-        time_text = font.render('[ ' + time_string + ' +' + str(player.bonus) + ' ]', 1, (255, 255, 255))
-        continue_text = font.render(continue_string, 1, (255, 255, 255))
+        round_text = font.render(
+            level_string + ' ' + str(player.level),
+            1, (255, 255, 255)
+        )
+        score_text = font.render(
+            score_string + ' ' + str(player.score),
+            1, (255, 255, 255)
+        )
+        time_text = font.render(
+            '[ ' + time_string + ' +' + str(player.bonus) + ' ]',
+            1, (255, 255, 255)
+        )
+        continue_text = font.render(
+            continue_string,
+            1, (255, 255, 255)
+        )
         if not player.is_dead:
-            win.blit(bg, (0, 0))
-            win.blit(score_text, (5, 0))
-            win.blit(round_text, (win_width - 87, 0))
+            win.blit(
+                bg,
+                (0, 0)
+            )
+            win.blit(
+                score_text,
+                (5, 0)
+            )
+            win.blit(
+                round_text,
+                (win_width - 87, 0)
+                )
             for entity in static_entity_list:
                 entity.draw()
             for entity in moving_entity_list:
@@ -506,16 +560,37 @@ def redraw(result_text):
             win.fill((0, 0, 0))
             player.draw()
             if player.is_successful:
-                end_text = font.render(success_string, 1, (0, 255, 0))
+                end_text = font.render(
+                    success_string,
+                    1, (0, 255, 0)
+                )
             else:
-                end_text = font.render(failure_string, 1, (255, 0, 0))
-            win.blit(end_text, (((win_width - end_text.get_width() / 2) / 2) - 5, (win_height / 2) - 60))
-            win.blit(score_text, (((win_width - score_text.get_width() / 2) / 2) - 10, win_height / 2))
+                end_text = font.render(
+                    failure_string,
+                    1, (255, 0, 0)
+                )
+            win.blit(
+                end_text,
+                (((win_width - end_text.get_width() / 2) / 2) - 5, (win_height / 2) - 60)
+            )
+            win.blit(
+                score_text,
+                (((win_width - score_text.get_width() / 2) / 2) - 10, win_height / 2)
+            )
             if player.bonus > 0:
-                win.blit(time_text, (((win_width - time_text.get_width() / 2) / 2) - 40, (win_height / 2) + 50))
+                win.blit(
+                    time_text,
+                    (((win_width - time_text.get_width() / 2) / 2) - 40, (win_height / 2) + 50)
+                )
             if player1.is_dead and player2.is_dead:
-                win.blit(result_text, (((win_width - result_text.get_width() / 2) / 2) - 60, (win_height / 2) + 100))
-            win.blit(continue_text, (((win_width - continue_text.get_width() / 2) / 2) - 60, (win_height / 2) + 150))
+                win.blit(
+                    result_text,
+                    (((win_width - result_text.get_width() / 2) / 2) - 60, (win_height / 2) + 100)
+                )
+            win.blit(
+                continue_text,
+                (((win_width - continue_text.get_width() / 2) / 2) - 60, (win_height / 2) + 150)
+            )
     pygame.display.update()
 
 # Main loop
@@ -541,7 +616,10 @@ while(run):
 
     # Splash and Tutorial screens
     for event in pygame.event.get():
-        if (event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        if (
+            event.type == pygame.QUIT or
+            event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+        ):
             run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
@@ -558,7 +636,10 @@ while(run):
     for event in pygame.event.get():
 
         # Quit Game
-        if (event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        if (
+            event.type == pygame.QUIT or
+            event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+        ):
             run = False
 
     if not player.is_dead:
@@ -581,13 +662,25 @@ while(run):
 
         # Death
         for enemy_i in moving_entity_list:
-            if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
-                if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
+            if (
+                player.com()[0] > enemy_i.hitbox_static()[0] and
+                player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]
+            ):
+                if (
+                    player.com()[1] > enemy_i.hitbox_static()[1] and
+                    player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]
+                ):
                     end_time = pygame.time.get_ticks()
                     player.is_dead = True
         for enemy_i in static_entity_list:
-            if player.com()[0] > enemy_i.hitbox_static()[0] and player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]:
-                if player.com()[1] > enemy_i.hitbox_static()[1] and player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]:
+            if (
+                player.com()[0] > enemy_i.hitbox_static()[0] and
+                player.com()[0] < enemy_i.hitbox_static()[0] + enemy_i.hitbox_static()[2]
+            ):
+                if (
+                    player.com()[1] > enemy_i.hitbox_static()[1] and
+                    player.com()[1] < enemy_i.hitbox_static()[1] + enemy_i.hitbox_static()[3]
+                ):
                     end_time = pygame.time.get_ticks()
                     player.is_dead = True
 
@@ -628,10 +721,16 @@ while(run):
 
         # Decide winner of the round
         if player1.is_dead and player2.is_dead:
-            if (player1.is_successful and not player2.is_successful) or (player1.score > player2.score):
+            if (
+                player1.is_successful and not player2.is_successful or
+                player1.score > player2.score
+            ):
                 result_text = font.render(player1_win_string, 1, (255, 255, 255))
                 player1.level += 1
-            elif (not player1.is_successful and player2.is_successful) or (player1.score < player2.score):
+            elif (
+                not player1.is_successful and player2.is_successful or
+                player1.score < player2.score
+            ):
                 result_text = font.render(player2_win_string, 1, (255, 255, 255))
                 player2.level += 1
             else:
