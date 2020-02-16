@@ -109,62 +109,65 @@ crab_offset = 0
 boat_offset = -35
 
 # Background
-bg = pygame.image.load('res/main_bg.png').convert()
+bg = pygame.image.load('res/sprites/main_bg.png').convert()
+
+# Default font
+font = pygame.font.Font('res/fonts/HeartbitXX.ttf', 32)
 
 # Player 1 Sprites
-blue_right = pygame.image.load('res/blue_right.png')
+blue_right = pygame.image.load('res/sprites/blue_right.png')
 blue_right = pygame.transform.scale(blue_right, player_dimens)
-blue_left = pygame.image.load('res/blue_left.png')
+blue_left = pygame.image.load('res/sprites/blue_left.png')
 blue_left = pygame.transform.scale(blue_left, player_dimens)
-blue_up = pygame.image.load('res/blue_up.png')
+blue_up = pygame.image.load('res/sprites/blue_up.png')
 blue_up = pygame.transform.scale(blue_up, player_dimens)
-blue_down = pygame.image.load('res/blue_down.png')
+blue_down = pygame.image.load('res/sprites/blue_down.png')
 blue_down = pygame.transform.scale(blue_down, player_dimens)
 blue_sprite = [blue_left, blue_right, blue_up, blue_down]
 
 # Player 2 Sprites
-purple_right = pygame.image.load('res/purple_right.png')
+purple_right = pygame.image.load('res/sprites/purple_right.png')
 purple_right = pygame.transform.scale(purple_right, player_dimens)
-purple_left = pygame.image.load('res/purple_left.png')
+purple_left = pygame.image.load('res/sprites/purple_left.png')
 purple_left = pygame.transform.scale(purple_left, player_dimens)
-purple_up = pygame.image.load('res/purple_up.png')
+purple_up = pygame.image.load('res/sprites/purple_up.png')
 purple_up = pygame.transform.scale(purple_up, player_dimens)
-purple_down = pygame.image.load('res/purple_down.png')
+purple_down = pygame.image.load('res/sprites/purple_down.png')
 purple_down = pygame.transform.scale(purple_down, player_dimens)
 purple_sprite = [purple_left, purple_right, purple_up, purple_down]
 
 # Enemy Orca Sprites
-orca_left =  pygame.image.load('res/orca_left.png')
+orca_left =  pygame.image.load('res/sprites/orca_left.png')
 orca_left = pygame.transform.scale(orca_left, orca_dimens)
-orca_right =  pygame.image.load('res/orca_right.png')
+orca_right =  pygame.image.load('res/sprites/orca_right.png')
 orca_right = pygame.transform.scale(orca_right, orca_dimens)
 orca_sprite = [orca_left, orca_right]
 
 # Enemy Turtle Sprites
-turtle_left =  pygame.image.load('res/turtle_left.png')
+turtle_left =  pygame.image.load('res/sprites/turtle_left.png')
 turtle_left = pygame.transform.scale(turtle_left, turtle_dimens)
-turtle_right =  pygame.image.load('res/turtle_right.png')
+turtle_right =  pygame.image.load('res/sprites/turtle_right.png')
 turtle_right = pygame.transform.scale(turtle_right, turtle_dimens)
 turtle_sprite = [turtle_left, turtle_right]
 
 # Enemy Whale Sprites
-whale_left =  pygame.image.load('res/whale_left.png')
+whale_left =  pygame.image.load('res/sprites/whale_left.png')
 whale_left = pygame.transform.scale(whale_left, whale_dimens)
-whale_right =  pygame.image.load('res/whale_right.png')
+whale_right =  pygame.image.load('res/sprites/whale_right.png')
 whale_right = pygame.transform.scale(whale_right, whale_dimens)
 whale_sprite = [whale_left, whale_right]
 
 # Enemy Crab Sprites
-crab_left =  pygame.image.load('res/crab_left.png')
+crab_left =  pygame.image.load('res/sprites/crab_left.png')
 crab_left = pygame.transform.scale(crab_left, crab_dimens)
-crab_right =  pygame.image.load('res/crab_right.png')
+crab_right =  pygame.image.load('res/sprites/crab_right.png')
 crab_right = pygame.transform.scale(crab_right, crab_dimens)
 crab_sprite = [crab_left, crab_right]
 
 # Enemy Boat Sprites
-boat_left =  pygame.image.load('res/boat_left.png')
+boat_left =  pygame.image.load('res/sprites/boat_left.png')
 boat_left = pygame.transform.scale(boat_left, boat_dimens)
-boat_right =  pygame.image.load('res/boat_right.png')
+boat_right =  pygame.image.load('res/sprites/boat_right.png')
 boat_right = pygame.transform.scale(boat_right, boat_dimens)
 boat_sprite = [boat_left, boat_right]
 
@@ -429,7 +432,7 @@ def redraw(result_text):
     if not player.is_dead:
         win.blit(bg, (0, 0))
         win.blit(score_text, (5, 0))
-        win.blit(round_text, (win_width - 80, 0))
+        win.blit(round_text, (win_width - 85, 0))
         crab1.draw()
         crab2.draw()
         crab3.draw()
@@ -457,8 +460,6 @@ def redraw(result_text):
     pygame.display.update()
 
 # Main loop
-font = pygame.font.Font('HeartbitXX.ttf', 32)
-
 while(run):
     time_bonus = clock.tick(60)
 
