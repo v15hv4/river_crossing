@@ -491,12 +491,12 @@ def redraw(result_text):
     else:
         round_text = font.render(level_string + ' ' + str(player.level), 1, (255, 255, 255))
         score_text = font.render(score_string + ' ' + str(player.score), 1, (255, 255, 255))
-        time_text = font.render('[ ' + time_string + ' ' + str(player.bonus) + ' ]', 1, (255, 255, 255))
+        time_text = font.render('[ ' + time_string + ' +' + str(player.bonus) + ' ]', 1, (255, 255, 255))
         continue_text = font.render(continue_string, 1, (255, 255, 255))
         if not player.is_dead:
             win.blit(bg, (0, 0))
             win.blit(score_text, (5, 0))
-            win.blit(round_text, (win_width - 85, 0))
+            win.blit(round_text, (win_width - 87, 0))
             for entity in static_entity_list:
                 entity.draw()
             for entity in moving_entity_list:
@@ -509,7 +509,7 @@ def redraw(result_text):
                 end_text = font.render(success_string, 1, (0, 255, 0))
             else:
                 end_text = font.render(failure_string, 1, (255, 0, 0))
-            win.blit(end_text, (((win_width - end_text.get_width() / 2) / 2) - 10, (win_height / 2) - 50))
+            win.blit(end_text, (((win_width - end_text.get_width() / 2) / 2) - 5, (win_height / 2) - 60))
             win.blit(score_text, (((win_width - score_text.get_width() / 2) / 2) - 10, win_height / 2))
             if player.bonus > 0:
                 win.blit(time_text, (((win_width - time_text.get_width() / 2) / 2) - 40, (win_height / 2) + 50))
