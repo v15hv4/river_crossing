@@ -33,6 +33,7 @@ class entity(object):
         self.right = False
         self.is_dead = False
         self.has_played = False
+        self.is_successful = False
         self.sprite = sprite
         
     def hitbox_static(self):
@@ -353,12 +354,70 @@ def update_speeds():
     for entity in moving_entity_list:
         entity.speed = entity_speeds[player.level - 1]
 
+def update_score():
+    if player == player1:
+        if player.y < 580 and player.y > 550:
+            player.score = 10
+        elif player.y < 550 and player.y > 472:
+            player.score = 15
+        elif player.y < 472 and player.y > 442:
+            player.score = 25
+        elif player.y < 442 and player.y > 364:
+            player.score = 30
+        elif player.y < 364 and player.y > 334:
+            player.score = 40
+        elif player.y < 334 and player.y > 256:
+            player.score = 45
+        elif player.y < 256 and player.y > 226:
+            player.score = 55
+        elif player.y < 226 and player.y > 148:
+            player.score = 60
+        elif player.y < 148 and player.y > 118:
+            player.score = 70
+        elif player.y < 118 and player.y > 40:
+            player.score = 75
+        elif player.y < 40:
+            player.score = 80
+            player.is_successful = True
+            player.is_dead = True
+    else:
+        if player.y > 580:
+            player.score = 80
+            player.is_successful = True
+            player.is_dead = True
+        elif player.y < 580 and player.y > 550:
+            player.score = 75
+        elif player.y < 550 and player.y > 472:
+            player.score = 65
+        elif player.y < 472 and player.y > 442:
+            player.score = 60
+        elif player.y < 442 and player.y > 364:
+            player.score = 55
+        elif player.y < 364 and player.y > 334:
+            player.score = 45
+        elif player.y < 334 and player.y > 256:
+            player.score = 40
+        elif player.y < 256 and player.y > 226:
+            player.score = 30
+        elif player.y < 226 and player.y > 148:
+            player.score = 25
+        elif player.y < 148 and player.y > 118:
+            player.score = 15
+        elif player.y < 118 and player.y > 40:
+            player.score = 10
+        elif player.y < 40:
+            player.score = 0
+
 def next_round():
     player1.is_dead = False
+    player1.is_successful = False
+    player1.has_played = False
     player1.score = 0
     player1.x = p1_x
     player1.y = p1_y
     player2.is_dead = False
+    player2.is_successful = False
+    player2.has_played = False
     player2.score = 0
     player2.x = p2_x
     player2.y = p2_y
@@ -443,19 +502,22 @@ def redraw(result_text):
     else:
         win.fill((0, 0, 0))
         player.draw()
-        dead_text = font.render('YOU DIED!', 1, (255, 255, 255))
-        win.blit(dead_text, ((win_width - 60) / 2, (win_height / 2) - 50))
-        win.blit(score_text, ((win_width - 60) / 2, win_height / 2))
+        if player.is_successful:
+            end_text = font.render('SUCCESS!', 1, (0, 255, 0))
+        else:
+            end_text = font.render('YOU DIED.', 1, (255, 0, 0))
+        win.blit(end_text, ((win_width - end_text.get_width() / 2) / 2, (win_height / 2) - 50))
+        win.blit(score_text, ((win_width - score_text.get_width() / 2) / 2, win_height / 2))
         if player1.is_dead and player2.is_dead:
-            win.blit(result_text, ((win_width - 60) / 2, (win_height / 2) + 50))
-        win.blit(continue_text, (((win_width - 60) / 2) - 75, (win_height / 2) + 100))
+            win.blit(result_text, (((win_width - result_text.get_width() / 2) / 2) - 40, (win_height / 2) + 50))
+        win.blit(continue_text, (((win_width - continue_text.get_width() / 2) / 2) - 40, (win_height / 2) + 100))
     pygame.display.update()
 
 # Main Loop
 font = pygame.font.Font('HeartbitXX.ttf', 30)
 
 while(run):
-    clock.tick(60)
+    time_bonus = clock.tick(60)
 
     if current_player == 1:
         player = player1
@@ -560,12 +622,17 @@ while(run):
             if player.y < (win_height - player_dimens[1] - 2):
                 player.y += player.speed
         result_text = font.render('', 1, (255, 255, 255))
-    
+
+        update_score()
+
+        if player.is_successful:
+            player.score += (100 - time_bonus)
+
         if player1.is_dead and player2.is_dead:
-            if player1.score > player2.score:
+            if (player1.is_successful and not player2.is_successful) or (player1.score > player2.score):
                 result_text = font.render('PLAYER 1 WINS THE ROUND!', 1, (255, 255, 255))
                 player1.level += 1
-            elif player1.score < player2.score:
+            elif (not player1.is_successful and player2.is_successful) or (player1.score < player2.score):
                 result_text = font.render('PLAYER 2 WINS THE ROUND!', 1, (255, 255, 255))
                 player2.level += 1
             else:
