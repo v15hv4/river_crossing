@@ -394,6 +394,10 @@ def next_round():
     player2.x = player2_x
     player2.y = player2_y
 
+    # Randomize crab positions in each round
+    for crab in static_entity_list:
+        crab.x = random.randint(0, win_width - land_enemy[0][0])
+
 # Switch player when one's turn is done
 def switch_player():
     global current_player
@@ -436,7 +440,7 @@ def redraw(result_text):
         player.draw()
     else:
         win.fill((0, 0, 0))
-        player.draw()
+        # player.draw()
         if player.is_successful:
             end_text = font.render('SUCCESS!', 1, (0, 255, 0))
         else:
@@ -536,7 +540,7 @@ while(run):
                 result_text = font.render('PLAYER 2 WINS THE ROUND!', 1, (255, 255, 255))
                 player2.level += 1
             else:
-                result_text = font.render('IT\'S A TIE!', 1, (255, 255, 255))
+                result_text = font.render('IT\'S A TIE! BOTH PLAYERS WIN.', 1, (255, 255, 255))
                 player1.level += 1
                 player2.level += 1
 
@@ -548,7 +552,6 @@ while(run):
     redraw(result_text)
 pygame.quit()
 
-# TODO: Replace boat sprite
 # TODO: Map custom keys to u/d/l/r navigation for each player
 # TODO: Add config files
 # TODO: Check whether code complies with PEP8 standards
