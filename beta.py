@@ -1,20 +1,85 @@
 import pygame
 import random
+import configparser
 pygame.init()
 
+# Load configs
+configparser = configparser.RawConfigParser()
+configparser.read([
+    'config/global.cfg', 
+    'config/player.cfg',
+    'config/enemies.cfg',
+    'config/map.cfg'
+])
+
 # Window dimensions
-win_height = 696
-win_width = 696
+fps = configparser.getint('init', 'fps')
+win_height = configparser.getint('init', 'win_height')
+win_width = configparser.getint('init', 'win_width')
 win = pygame.display.set_mode((win_width, win_height))
+
+# Misc global variables
+current_player = configparser.getint('init', 'current_player')
+player_speed = configparser.getint('player_general', 'speed')
+player_init_level = configparser.getint('player_general', 'init_level')
+player_init_score = configparser.getint('player_general', 'init_score')
+
+# Sprite dimensions
+player_dimens = (configparser.getint('player_general', 'width'), configparser.getint('player_general', 'height'))
+orca_dimens = (configparser.getint('orca', 'width'), configparser.getint('orca', 'height'))
+turtle_dimens = (configparser.getint('turtle', 'width'), configparser.getint('turtle', 'height'))
+whale_dimens = (configparser.getint('whale', 'width'), configparser.getint('whale', 'height'))
+crab_dimens = (configparser.getint('crab', 'width'), configparser.getint('crab', 'height'))
+boat_dimens = (configparser.getint('boat', 'width'), configparser.getint('boat', 'height'))
+
+# Initial player positions
+player1_x = configparser.getint('player1', 'x')
+player1_y = configparser.getint('player1', 'y')
+player2_x = configparser.getint('player2', 'x')
+player2_y = configparser.getint('player2', 'y')
+
+# Water Rows
+water_r1 = configparser.getint('map', 'water_r1')
+water_r2 = configparser.getint('map', 'water_r2')
+water_r3 = configparser.getint('map', 'water_r3')
+water_r4 = configparser.getint('map', 'water_r4')
+water_r5 = configparser.getint('map', 'water_r5')
+water_r6 = configparser.getint('map', 'water_r6')
+
+# Land Rows
+land_r1 = configparser.getint('map', 'land_r1')
+land_r2 = configparser.getint('map', 'land_r2')
+land_r3 = configparser.getint('map', 'land_r3')
+land_r4 = configparser.getint('map', 'land_r4')
+land_r5 = configparser.getint('map', 'land_r5')
+
+# Enemies' Row Offsets
+orca_offset = configparser.getint('orca', 'offset')
+turtle_offset = configparser.getint('turtle', 'offset')
+whale_offset = configparser.getint('whale', 'offset')
+crab_offset = configparser.getint('crab', 'offset')
+boat_offset = configparser.getint('boat', 'offset')
+
+# Enemies' Base Speeds
+orca_speed = configparser.getint('orca', 'speed')
+turtle_speed = configparser.getint('turtle', 'speed')
+whale_speed = configparser.getint('whale', 'speed')
+crab_speed = configparser.getint('crab', 'speed')
+boat_speed = configparser.getint('boat', 'speed')
+
+# Game Strings
+level_string = str(configparser.get('strings', 'level_string'))
+score_string = str(configparser.get('strings', 'score_string'))
+continue_string = str(configparser.get('strings', 'continue_string'))
+success_string = str(configparser.get('strings', 'success_string'))
+failure_string = str(configparser.get('strings', 'failure_string'))
+player1_win_string = str(configparser.get('strings', 'player1_win_string'))
+player2_win_string = str(configparser.get('strings', 'player2_win_string'))
+tie_string = str(configparser.get('strings', 'tie_string'))
 
 pygame.display.set_caption("River Crossing [BETA]")
 
 clock = pygame.time.Clock()
-
-# Misc global variables
-player_speed = 5
-run = True
-current_player = 1
 
 # Blueprint of every in-game entity
 class entity(object):
@@ -24,8 +89,8 @@ class entity(object):
         self.width = dimens[0]
         self.height = dimens[1]
         self.speed = player_speed
-        self.score = 0
-        self.level = 1
+        self.score = player_init_score
+        self.level = player_init_level
         self.up = False
         self.down = False
         self.left = False
@@ -72,42 +137,6 @@ class entity(object):
         elif self.right:
             win.blit(self.sprite[1], (self.x, self.y))
 
-# Sprite dimensions
-player_dimens = (28, 32)
-orca_dimens = (95, 56)
-turtle_dimens = (70, 40)
-whale_dimens = (86, 70)
-crab_dimens = (54, 30)
-boat_dimens = (80, 90)
-
-# Initial player positions
-player1_x = (win_width / 2)
-player1_y = 655
-player2_x = (win_width / 2)
-player2_y = 8
-
-# Water Rows
-water_r1 = 40
-water_r2 = 148
-water_r3 = 256
-water_r4 = 364
-water_r5 = 472
-water_r6 = 580
-
-# Land Rows
-land_r1 = 118
-land_r2 = 226
-land_r3 = 334
-land_r4 = 442
-land_r5 = 550
-
-# Enemies' Row Offsets
-orca_offset = 0
-turtle_offset = 20
-whale_offset = -10
-crab_offset = 0
-boat_offset = -35
-
 # Background
 bg = pygame.image.load('res/sprites/main_bg.png').convert()
 
@@ -135,6 +164,9 @@ purple_up = pygame.transform.scale(purple_up, player_dimens)
 purple_down = pygame.image.load('res/sprites/purple_down.png')
 purple_down = pygame.transform.scale(purple_down, player_dimens)
 purple_sprite = [purple_left, purple_right, purple_up, purple_down]
+
+# Player 1 Movement Keys
+
 
 # Enemy Orca Sprites
 orca_left =  pygame.image.load('res/sprites/orca_left.png')
@@ -172,11 +204,11 @@ boat_right = pygame.transform.scale(boat_right, boat_dimens)
 boat_sprite = [boat_left, boat_right]
 
 # Entity lists
-orca = [orca_dimens, orca_offset, orca_sprite]
-turtle = [turtle_dimens, turtle_offset, turtle_sprite]
-whale = [whale_dimens, whale_offset, whale_sprite]
-boat = [boat_dimens, boat_offset, boat_sprite]
-crab = [crab_dimens, crab_offset, crab_sprite]
+orca = [orca_dimens, orca_offset, orca_sprite, orca_speed]
+turtle = [turtle_dimens, turtle_offset, turtle_sprite, turtle_speed]
+whale = [whale_dimens, whale_offset, whale_sprite, whale_speed]
+boat = [boat_dimens, boat_offset, boat_sprite, boat_speed]
+crab = [crab_dimens, crab_offset, crab_sprite, crab_speed]
 entity_list = [orca, turtle, whale, boat, crab]
 entity_speeds = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
 
@@ -196,7 +228,7 @@ crab1 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab1.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+crab1.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 2
 crab2 = entity(
@@ -205,7 +237,7 @@ crab2 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab2.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+crab2.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 3
 crab3 = entity(
@@ -214,7 +246,7 @@ crab3 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab3.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+crab3.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 4
 crab4 = entity(
@@ -223,7 +255,7 @@ crab4 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab4.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+crab4.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Land Row 5
 crab5 = entity(
@@ -232,7 +264,7 @@ crab5 = entity(
     land_enemy[0], 
     land_enemy[2]
 )
-crab5.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+crab5.init_as_enemy(crab_speed, random.choice([-1, 1]))
 
 # Enemy at Water Row 1
 water_enemy_1 = entity_list[random.randint(0, 3)]
@@ -242,7 +274,7 @@ row1_enemy = entity(
     water_enemy_1[0],
     water_enemy_1[2]
 )
-row1_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+row1_enemy.init_as_enemy(water_enemy_1[3] + entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 2
 water_enemy_2 = entity_list[random.randint(0, 3)]
@@ -252,7 +284,7 @@ row2_enemy = entity(
     water_enemy_2[0],
     water_enemy_2[2]
 )
-row2_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+row2_enemy.init_as_enemy(water_enemy_2[3] + entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 3
 water_enemy_3 = entity_list[random.randint(0, 3)]
@@ -262,7 +294,7 @@ row3_enemy = entity(
     water_enemy_3[0],
     water_enemy_3[2]
 )
-row3_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+row3_enemy.init_as_enemy(water_enemy_3[3] + entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 4
 water_enemy_4 = entity_list[random.randint(0, 3)]
@@ -272,7 +304,7 @@ row4_enemy = entity(
     water_enemy_4[0],
     water_enemy_4[2]
 )
-row4_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+row4_enemy.init_as_enemy(water_enemy_4[3] + entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 5
 water_enemy_5 = entity_list[random.randint(0, 3)]
@@ -282,7 +314,7 @@ row5_enemy = entity(
     water_enemy_5[0],
     water_enemy_5[2]
 )
-row5_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+row5_enemy.init_as_enemy(water_enemy_5[3] + entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy at Water Row 6
 water_enemy_6 = entity_list[random.randint(0, 3)]
@@ -292,7 +324,7 @@ row6_enemy = entity(
     water_enemy_6[0],
     water_enemy_6[2]
 )
-row6_enemy.init_as_enemy(entity_speeds[0], random.choice([-1, 1]))
+row6_enemy.init_as_enemy(water_enemy_6[3] + entity_speeds[0], random.choice([-1, 1]))
 
 # Enemy Lists
 static_entity_list = [
@@ -330,6 +362,12 @@ def sprite_direction(new_direction):
 def update_speeds():
     for entity in moving_entity_list:
         entity.speed = entity_speeds[player.level - 1]
+    row1_enemy.speed += water_enemy_1[3]
+    row2_enemy.speed += water_enemy_2[3]
+    row3_enemy.speed += water_enemy_3[3]
+    row4_enemy.speed += water_enemy_4[3]
+    row5_enemy.speed += water_enemy_5[3]
+    row6_enemy.speed += water_enemy_6[3]
 
 # Calculate score based on player's position
 def update_score():
@@ -426,9 +464,9 @@ def restrict_player():
 
 # Redraw surface
 def redraw(result_text):
-    round_text = font.render('LEVEL ' + str(player.level), 1, (255, 255, 255))
-    score_text = font.render('SCORE: ' + str(player.score), 1, (255, 255, 255))
-    continue_text = font.render('PRESS ENTER TO CONTINUE', 1, (255, 255, 255))
+    round_text = font.render(level_string + ' ' + str(player.level), 1, (255, 255, 255))
+    score_text = font.render(score_string + ' ' + str(player.score), 1, (255, 255, 255))
+    continue_text = font.render(continue_string, 1, (255, 255, 255))
     if not player.is_dead:
         win.blit(bg, (0, 0))
         win.blit(score_text, (5, 0))
@@ -447,11 +485,11 @@ def redraw(result_text):
         player.draw()
     else:
         win.fill((0, 0, 0))
-        # player.draw()
+        player.draw()
         if player.is_successful:
-            end_text = font.render('SUCCESS!', 1, (0, 255, 0))
+            end_text = font.render(success_string, 1, (0, 255, 0))
         else:
-            end_text = font.render('YOU DIED.', 1, (255, 0, 0))
+            end_text = font.render(failure_string, 1, (255, 0, 0))
         win.blit(end_text, ((win_width - end_text.get_width() / 2) / 2, (win_height / 2) - 50))
         win.blit(score_text, ((win_width - score_text.get_width() / 2) / 2, win_height / 2))
         if player1.is_dead and player2.is_dead:
@@ -460,8 +498,9 @@ def redraw(result_text):
     pygame.display.update()
 
 # Main loop
+run = True
 while(run):
-    time_bonus = clock.tick(60)
+    time_bonus = clock.tick(fps)
 
     # Check for player change
     if current_player == 1:
@@ -539,13 +578,13 @@ while(run):
         # Decide winner of the round
         if player1.is_dead and player2.is_dead:
             if (player1.is_successful and not player2.is_successful) or (player1.score > player2.score):
-                result_text = font.render('PLAYER 1 WINS THE ROUND!', 1, (255, 255, 255))
+                result_text = font.render(player1_win_string, 1, (255, 255, 255))
                 player1.level += 1
             elif (not player1.is_successful and player2.is_successful) or (player1.score < player2.score):
-                result_text = font.render('PLAYER 2 WINS THE ROUND!', 1, (255, 255, 255))
+                result_text = font.render(player2_win_string, 1, (255, 255, 255))
                 player2.level += 1
             else:
-                result_text = font.render('IT\'S A TIE! BOTH PLAYERS WIN.', 1, (255, 255, 255))
+                result_text = font.render(tie_string, 1, (255, 255, 255))
                 player1.level += 1
                 player2.level += 1
 
@@ -557,7 +596,7 @@ while(run):
     redraw(result_text)
 pygame.quit()
 
-# TODO: Add config files
+# TODO: Fix time bonus
 # TODO: Check whether code complies with PEP8 standards
 # TODO: Sounds (?)
 # TODO: Splash screen (?)
