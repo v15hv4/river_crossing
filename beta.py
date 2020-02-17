@@ -243,7 +243,7 @@ whale = [whale_dimens, whale_offset, whale_sprite, whale_speed]
 boat = [boat_dimens, boat_offset, boat_sprite, boat_speed]
 crab = [crab_dimens, crab_offset, crab_sprite, crab_speed]
 entity_list = [orca, turtle, whale, boat, crab]
-entity_speeds = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
+entity_speeds = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 100]
 
 # Players
 player1 = Entity(player1_x, player1_y, player_dimens, blue_sprite)
@@ -749,5 +749,4 @@ while(run):
     redraw(result_text)
 pygame.quit()
 
-# TODO: Check whether code complies with PEP8 standards
 # TODO: Sounds (?)
