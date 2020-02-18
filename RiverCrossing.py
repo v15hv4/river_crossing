@@ -20,10 +20,15 @@ win = pygame.display.set_mode((win_width, win_height))
 
 # Misc global variables
 current_player = configparser.getint('init', 'current_player')
-player_speed = configparser.getint('player_general', 'speed')
 player_init_level = configparser.getint('player_general', 'init_level')
 player_init_score = configparser.getint('player_general', 'init_score')
-player_init_bonus = 0
+player_init_bonus = configparser.getint('player_general', 'init_bonus')
+player_speed = configparser.getint('player_general', 'speed')
+color_success = tuple(configparser.get('colors', 'color_success').split(','))
+color_failure = tuple(configparser.get('colors', 'color_failure').split(','))
+color_white = tuple(configparser.get('colors', 'color_white').split(','))
+color_black = tuple(configparser.get('colors', 'color_black').split(','))
+font_file = configparser.get('strings', 'font_file')
 
 # Sprite dimensions
 player_dimens = (
@@ -176,7 +181,7 @@ tutorial = pygame.transform.scale(tutorial, (win_width, win_height))
 bg = pygame.image.load('res/images/main_bg.png').convert()
 
 # Default font
-font = pygame.font.Font('res/fonts/HeartbitXX.ttf', 32)
+font = pygame.font.Font(font_file, 32)
 
 # Player 1 Sprites
 blue_right = pygame.image.load('res/sprites/blue_right.png')
