@@ -243,7 +243,7 @@ whale = [whale_dimens, whale_offset, whale_sprite, whale_speed]
 boat = [boat_dimens, boat_offset, boat_sprite, boat_speed]
 crab = [crab_dimens, crab_offset, crab_sprite, crab_speed]
 entity_list = [orca, turtle, whale, boat, crab]
-entity_speeds = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 100]
+entity_speeds = [3, 5, 7, 9, 11, 13, 15, 17, 19, 100]
 
 # Players
 player1 = Entity(player1_x, player1_y, player_dimens, blue_sprite)
@@ -396,7 +396,10 @@ def sprite_direction(new_direction):
 # Update speeds of moving enemies
 def update_speeds():
     for entity in moving_entity_list:
-        entity.speed = entity_speeds[player.level - 1]
+        try:
+            entity.speed = entity_speeds[player.level - 1]
+        except:
+            entity.speed = entity_speeds[len(entity_speeds) - 1]
     row1_enemy.speed += water_enemy_1[3]
     row2_enemy.speed += water_enemy_2[3]
     row3_enemy.speed += water_enemy_3[3]
