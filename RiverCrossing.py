@@ -24,7 +24,6 @@ player_speed = configparser.getint('player_general', 'speed')
 player_init_level = configparser.getint('player_general', 'init_level')
 player_init_score = configparser.getint('player_general', 'init_score')
 player_init_bonus = 0
-# configparser.getint('player_general', 'init_bonus')
 
 # Sprite dimensions
 player_dimens = (
